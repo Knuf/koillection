@@ -15,13 +15,15 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Intl\Countries;
 use Symfony\Component\HttpClient\CurlHttpClient;
 use Twig\Environment;
+use Psr\Log\LoggerInterface;
 
 abstract class HtmlScraper
 {
     protected ?CurlHttpClient $client = null;
 
     public function __construct(
-        protected Environment $twig
+        protected Environment $twig,
+        protected LoggerInterface $logger
     ) {
         $this->client = new CurlHttpClient();
     }
@@ -59,6 +61,7 @@ abstract class HtmlScraper
         foreach ($matches[1] as $xPath) {
             $results = $crawler->evaluate($xPath);
 
+
             if ($results instanceof Crawler) {
                 $results = $results->each(static function (Crawler $node): string {
                     return $node->text();
@@ -89,6 +92,10 @@ abstract class HtmlScraper
         foreach ($scraping->getDataToScrap() as $key => $dataToScrap) {
             $value = $this->extract($dataToScrap->getPath(), $dataToScrap->getType(), $crawler, $scraping);
 
+            $this->logger->info(sprintf(
+                   'key: %s => %s',
+                    $dataToScrap->getName(), $value
+                ));
             $datum = (new Datum())
                 ->setValue($value)
                 ->setLabel($dataToScrap->getName())
@@ -167,6 +174,11 @@ abstract class HtmlScraper
             $scrapingUrlElements = parse_url($scraping->getUrl());
             $url = $scrapingUrlElements['scheme'] . '://' . $scrapingUrlElements['host'] . $urlElements['path'];
         }
+
+        $this->logger->info(sprintf(
+           'guestHost::url %s',
+            $url
+        ));
 
         return $url;
     }

@@ -27,6 +27,12 @@ services:
         resource: '../api/Controller'
         tags: [ 'controller.service_arguments' ]
 
+    App\EventListener\RequestLogger:
+        arguments: ['@monolog.logger.request']
+        tags:
+            - { name: 'kernel.event_listener', event: 'kernel.request', method: 'onKernelRequest' }
+
+
 when@test:
     services:
         App\Tests\Factory\:

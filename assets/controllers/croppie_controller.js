@@ -38,6 +38,7 @@ export default class extends Controller {
     refreshImage(event) {
         let form = this.element.querySelector('.file-input');
         let self = this;
+
       
         this.croppie.result({
             type: "canvas",

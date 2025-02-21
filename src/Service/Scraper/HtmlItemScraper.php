@@ -7,6 +7,7 @@ namespace App\Service\Scraper;
 use App\Enum\DatumTypeEnum;
 use App\Enum\ScraperTypeEnum;
 use App\Model\ScrapingItem;
+use Twig\Environment;
 
 class HtmlItemScraper extends HtmlScraper
 {
@@ -20,7 +21,7 @@ class HtmlItemScraper extends HtmlScraper
 
         return [
             'name' => $scraping->getScrapName() ? $this->extract($scraper->getNamePath(), DatumTypeEnum::TYPE_TEXT, $crawler, $scraping) : null,
-            'image' => $image,
+            'image' => $image,  
             'data' => $this->scrapData($scraping, $crawler, ScraperTypeEnum::TYPE_ITEM),
             'scrapedUrl' => $scraping->getUrl()
         ];
